@@ -1,0 +1,90 @@
+
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    14:49:31 10/16/2024 
+-- Design Name: 
+-- Module Name:    keypad – Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 – File Created
+-- Additional Comments: 
+--
+Library IEEE;
+Use IEEE.STD_LOGIC_1164.ALL;
+Use IEEE.STD_LOGIC_ARITH.ALL;
+Use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+---- Uncomment the following library declaration if instantiating
+---- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+Entity keypad is
+    Port ( clk : in  STD_LOGIC;
+           Rst : in  STD_LOGIC;
+           Row : out  STD_LOGIC_VECTOR (3 downto 0);
+           Col : in  STD_LOGIC_VECTOR (3 downto 0);
+           Key_code : out  STD_LOGIC_VECTOR (3 downto 0);
+           Key_valid : out  STD_LOGIC);
+End keypad;
+
+Architecture Behavioral of keypad is
+
+    Signal state : integer := 0;
+    Signal key_detected : STD_LOGIC_VECTOR(3 downto 0) := (others => ‘0’);
+
+Begin
+    Process(clk, rst)
+    Begin
+        If rst = ‘1’ then
+            Row <= “1111”;  -- Disable all rows
+            Key_code <= (others => ‘0’);
+            Key_valid <= ‘0’;
+            State <= 0;
+        Elsif rising_edge(clk) then
+            Case state is
+                When 0 =>
+                    Row <= “1110”;  -- Enable row 0
+                    If col(0) = ‘0’ then key_code <= “0000”; key_valid <= ‘1’; state <= 1; end if;
+                    If col(1) = ‘0’ then key_code <= “0001”; key_valid <= ‘1’; state <= 1; end if;
+                    If col(2) = ‘0’ then key_code <= “0010”; key_valid <= ‘1’; state <= 1; end if;
+                    If col(3) = ‘0’ then key_code <= “0011”; key_valid <= ‘1’; state <= 1; end if;
+
+                When 1 =>
+                    Row <= “1101”;  -- Enable row 1
+                    If col(0) = ‘0’ then key_code <= “0100”; key_valid <= ‘1’; state <= 2; end if;
+                    If col(1) = ‘0’ then key_code <= “0101”; key_valid <= ‘1’; state <= 2; end if;
+                    If col(2) = ‘0’ then key_code <= “0110”; key_valid <= ‘1’; state <= 2; end if;
+                    If col(3) = ‘0’ then key_code <= “0111”; key_valid <= ‘1’; state <= 2; end if;
+
+                When 2 =>
+                    Row <= “1011”;  -- Enable row 2
+                    If col(0) = ‘0’ then key_code <= “1000”; key_valid <= ‘1’; state <= 3; end if;
+                    If col(1) = ‘0’ then key_code <= “1001”; key_valid <= ‘1’; state <= 3; end if;
+                    If col(2) = ‘0’ then key_code <= “1010”; key_valid <= ‘1’; state <= 3; end if;
+                    If col(3) = ‘0’ then key_code <= “1011”; key_valid <= ‘1’; state <= 3; end if;
+
+                When 3 =>
+                    Row <= “0111”;  -- Enable row 3
+                    If col(0) = ‘0’ then key_code <= “1100”; key_valid <= ‘1’; state <= 0; end if;
+                    If col(1) = ‘0’ then key_code <= “1101”; key_valid <= ‘1’; state <= 0; end if;
+                    If col(2) = ‘0’ then key_code <= “1110”; key_valid <= ‘1’; state <= 0; end if;
+                    If col(3) = ‘0’ then key_code <= “1111”; key_valid <= ‘1’; state <= 0; end if;
+
+                When others =>
+                    State <= 0; -- Reset state
+            End case;
+        End if;
+    End process;
+
+
+
+End Behavioral;
+
